@@ -19,6 +19,8 @@ export class ListEmployeeComponent implements OnInit {
   total: number = 0; // Total of All records to show
   limit: number = 10; // Per Page Limit
   searchKey: string = ''
+  sortedBy: string = ''
+  sortAsc: boolean = false
 
   constructor(private _employeeService: EmployeeService, private _employeeDataService: EmployeeDataService) {  }
 
@@ -30,6 +32,7 @@ export class ListEmployeeComponent implements OnInit {
       this.dataToShow = JSON.parse(JSON.stringify(response));
       this.updateTotal(this.employees.length);
       this.updateDataToShow(this.employees.slice(0, this.limit));
+      this.sortByKey('name');
       this.loading = false;
     },
     (error) => {
@@ -83,25 +86,46 @@ export class ListEmployeeComponent implements OnInit {
     this.total = total;
   }
 
-  sortByKey(key: string){
+  sortByKey(key: string) {
+    this.filterSearchData();
+    this.updateTotal(this.dataToShow.length);
+    if (key == this.sortedBy && key != '') {
+      this.sortAsc = !this.sortAsc;
+    } else {
+      this.sortAsc = true;
+    }
+    console.warn("sorteASC: ", this.sortAsc);
+    this.sortedBy = key;
     this.dataToShow.sort((first: Employee, next: Employee): number => {
       if (first.hasOwnProperty(key)) {
         let fistValue = (first as any)[key];
         let secondValue = (next as any)[key];
-        // next[key as keyof Employee]
-      
-        if(fistValue > secondValue) {
-          return 1
-        }
-        else if(fistValue < secondValue) {
-          return -1
+        if (this.sortAsc) {
+          if(fistValue > secondValue) {
+            return 1
+          }
+          else if(fistValue < secondValue) {
+            return -1
+          }
+          else {
+            return 0
+          }
         }
         else {
-          return 0
+          if(fistValue < secondValue) {
+            return 1
+          }
+          else if(fistValue > secondValue) {
+            return -1
+          }
+          else {
+            return 0
+          }
         }
       }
       return 0
     });
+    this.updateDataToShow(this.dataToShow.slice(0, this.limit));
     console.warn("Sort Key: ", key)
     console.log("Sorted Data: ", this.dataToShow);
   }

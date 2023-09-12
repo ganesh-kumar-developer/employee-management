@@ -18,9 +18,16 @@ export class EmployeeDataService {
 
     setEmployees(employees: Employee[]) {
         this.employeeList = employees;
+        localStorage.setItem("employeeList", JSON.stringify(employees));
     }
 
     getEmployeeById(id: number): Employee {
+        if (!this.employeeList.length) {
+            let item = localStorage.getItem('employeeList');
+            if (typeof item == 'string') {
+                this.setEmployees(JSON.parse(item))
+            }
+        }
         this.employeeList.forEach((employee) => {
             if (employee.id == id) {
                 this.selectedEmployee = employee;

@@ -25,6 +25,7 @@ export class DetailEmployeeComponent implements OnInit {
       if (selected) {
         this.selectedEmployee = selected;
       }
+      console.log("selectedId", this.selectedId)
       console.log("Ng on Init called", this.selectedEmployee)
     });
   }
